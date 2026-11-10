@@ -1,0 +1,1467 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>zecamotos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#eceef0;--panel:#fff;--ink:#1b2430;--muted:#66717f;--line:#d5d9de;--accent:#d9480f;--accent-ink:#fff;--ok:#2b8a3e;--warn:#fff4e6;--go:#1f7a3a}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 Barlow,system-ui,sans-serif}
+  h1,h2,h3{font-family:'Barlow Condensed',Impact,sans-serif;margin:0;letter-spacing:.02em}
+  header{position:sticky;top:0;z-index:20;background:var(--ink);color:#fff;display:flex;align-items:center;gap:6px 16px;padding:10px 24px;flex-wrap:wrap}
+  header h1{font-size:26px;cursor:pointer;flex:1}
+  header span{font-size:13px;color:#b8c0cb}
+  .nav{display:flex;gap:6px;flex-wrap:wrap;flex-basis:100%}
+  .nbtn{background:none;border:0;color:#b8c0cb;padding:6px 12px;font:600 15px Barlow,sans-serif;cursor:pointer;border-bottom:3px solid transparent}
+  .nbtn.on{color:#fff;border-bottom-color:var(--accent)}
+  main{max-width:1000px;margin:24px auto;padding:0 16px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:20px;margin-bottom:20px}
+  .card h2{font-size:22px;margin-bottom:12px}
+  .row{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end}
+  label{display:flex;flex-direction:column;font-weight:600;font-size:13px;color:var(--muted);gap:4px;flex:1;min-width:130px}
+  input,select{font:inherit;padding:9px 10px;border:1px solid var(--line);border-radius:4px;background:#fff;color:var(--ink)}
+  input[readonly]{background:#f3f4f6}
+  input[id$="Plate"],input[data-k="plate"]{text-transform:uppercase}
+  input:focus,select:focus,button:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+  .btn{background:var(--accent);color:var(--accent-ink);border:0;border-radius:4px;padding:10px 18px;font:600 15px Barlow,sans-serif;cursor:pointer}
+  .btn.ghost{background:none;color:var(--accent);border:1px solid var(--accent)}
+  .btn.small{padding:4px 10px;font-size:13px}
+  .tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-bottom:20px}
+  .tile{background:var(--panel);border:1px solid var(--line);border-left:6px solid var(--accent);border-radius:6px;padding:22px 18px;text-align:left;cursor:pointer;font:inherit;color:var(--ink)}
+  .tile:hover{border-color:var(--ink);border-left-color:var(--accent)}
+  .tile b{display:block;font:700 24px 'Barlow Condensed',sans-serif}
+  .tile span{color:var(--muted);font-size:14px}
+  .tile.go{background:var(--go);border-color:var(--go);color:#fff}
+  .tile.go span{color:#d8f0df}
+  .tile.go:hover{background:#17612e;border-color:#17612e}
+  .adm{display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:flex-end;margin-top:4px}
+  dialog.card{max-width:440px;width:92%;margin:auto}
+  dialog::backdrop{background:rgba(27,36,48,.55)}
+  .seg{display:flex;gap:8px;flex-wrap:wrap}
+  .seg .btn.on{background:var(--accent);color:var(--accent-ink)}
+  #v-sale:not(.quick) .quick-only{display:none!important}
+  #v-sale.quick .oficina-only{display:none!important}
+  table{width:100%;border-collapse:collapse;margin-top:12px}
+  th,td{text-align:left;padding:8px 6px;border-bottom:1px solid var(--line)}
+  th{font-size:13px;color:var(--muted)}
+  th[data-k]{cursor:pointer;user-select:none;white-space:nowrap}
+  th[data-k]:hover{color:var(--ink)}
+  th.asc::after{content:' ▲';font-size:10px}
+  th.desc::after{content:' ▼';font-size:10px}
+  td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+  tr.low td{background:var(--warn)}
+  tr.canceled td{color:var(--muted);text-decoration:line-through}
+  .hint{font-size:13px;color:var(--ok);min-height:19px;margin-top:6px}
+  .help{font-size:12px;color:var(--muted);font-weight:400}
+  .total{font:700 28px 'Barlow Condensed',sans-serif;text-align:right;margin-top:12px}
+  .msg{color:#c92a2a;min-height:20px}
+  .muted{color:var(--muted)}
+  .overflow{overflow-x:auto}
+  #login{max-width:340px;margin:12vh auto;padding:0 16px}
+  .hidden{display:none!important}
+  body:not(.is-admin) .admin-only{display:none!important}
+  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:20px}
+  .kpi{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:14px 16px}
+  .kpi b{display:block;font:700 28px 'Barlow Condensed',sans-serif}
+  .kpi span{color:var(--muted);font-size:13px}
+  .charts{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(420px,100%),1fr));gap:16px}
+  .chip{flex-direction:row;align-items:center;gap:6px;flex:none;min-width:0;border:1px solid var(--line);border-radius:999px;padding:4px 12px;font-size:13px;cursor:pointer;background:#fff;color:var(--ink)}
+  details.opt summary{cursor:pointer;color:var(--muted);font-weight:600}
+  /* busca de cliente com lista suspensa */
+  .picker{position:relative}
+  .dd{position:absolute;z-index:15;left:0;right:0;background:#fff;border:1px solid var(--ink);border-radius:4px;max-height:280px;overflow:auto;box-shadow:0 8px 20px rgba(27,36,48,.18)}
+  .dd div{padding:9px 12px;cursor:pointer;border-bottom:1px solid var(--line)}
+  .dd div[data-id]:hover{background:var(--warn)}
+  /* agenda */
+  .agenda-grid{display:grid;grid-template-columns:minmax(0,2fr) minmax(280px,1fr);gap:16px;align-items:start}
+  @media(max-width:860px){.agenda-grid{grid-template-columns:1fr}}
+  .cal{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+  .cal .dow{font-size:12px;font-weight:600;color:var(--muted);text-align:center;padding:4px 0}
+  .cal .day{min-height:82px;background:#fff;border:1px solid var(--line);border-radius:6px;padding:4px 5px;cursor:pointer;display:flex;flex-direction:column;gap:2px;font-size:12px;overflow:hidden}
+  .cal .day:hover{border-color:var(--ink)}
+  .cal .day.out{background:#f6f7f8;color:#9aa3ad}
+  .cal .day.sel{outline:2px solid var(--accent);border-color:var(--accent)}
+  .cal .n{font-weight:700;align-self:flex-start;padding:0 6px;border-radius:999px}
+  .cal .day.today .n{background:var(--accent);color:#fff}
+  .cal .ev{background:var(--warn);border-left:3px solid var(--accent);border-radius:3px;padding:0 4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .cal .ev.concluido{background:#e6f4ea;border-left-color:var(--ok)}
+  .cal .ev.cancelado{opacity:.5;text-decoration:line-through}
+  .agtop{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+  .agtop h2{flex:1;margin:0;text-transform:capitalize}
+  .ag{border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:4px;padding:8px 10px;margin-bottom:8px;background:#fff}
+  .ag.concluido{border-left-color:var(--ok)}
+  .ag.cancelado{opacity:.55}
+  .ag .acts{margin-top:6px;display:flex;gap:6px;flex-wrap:wrap}
+  .tag{font-size:11px;background:var(--bg);border-radius:999px;padding:1px 8px;color:var(--muted)}
+</style>
+</head>
+<body>
+
+<section id="login">
+  <div class="card">
+    <h1 style="font-size:34px;margin-bottom:4px">zecamotos</h1>
+    <p class="muted" style="margin-top:0">Entre para abrir o sistema.</p>
+    <div class="row" style="flex-direction:column;align-items:stretch">
+      <label>E-mail <input id="lUser" type="email" autocomplete="username"></label>
+      <label>Senha <input id="lPass" type="password" autocomplete="current-password"></label>
+      <button class="btn" id="lBtn">Entrar</button>
+      <button class="btn ghost small" id="forgotBtn" type="button">Esqueci minha senha</button>
+      <div class="msg" id="lMsg"></div>
+    </div>
+  </div>
+</section>
+
+<div id="app" class="hidden">
+  <header>
+    <h1 data-go="home">zecamotos</h1>
+    <span id="who"></span>
+    <button class="btn ghost small" id="pwdBtn" style="color:#fff;border-color:#fff">Alterar senha</button>
+    <button class="btn ghost small" id="logout" style="color:#fff;border-color:#fff">Sair</button>
+    <nav class="nav">
+      <button class="nbtn" data-go="home">Início</button>
+      <button class="nbtn" data-go="sale">Nova venda</button>
+      <button class="nbtn" data-go="agenda">Agenda</button>
+      <button class="nbtn" data-go="clients">Clientes</button>
+      <button class="nbtn admin-only" data-go="history">Registro de vendas</button>
+      <button class="nbtn admin-only" data-go="products">Produtos</button>
+      <button class="nbtn admin-only" data-go="services">Serviços</button>
+      <button class="nbtn admin-only" data-go="debtors">Devedores</button>
+      <button class="nbtn admin-only" data-go="analysis">Análises</button>
+    </nav>
+  </header>
+  <main>
+
+    <!-- INÍCIO -->
+    <div id="v-home">
+      <div class="tiles">
+        <button class="tile go" data-go="sale"><b>Nova venda</b><span>Serviços e produtos, com nota para imprimir</span></button>
+        <button class="tile" data-go="agenda"><b>Agenda</b><span id="agTile">Calendário de serviços</span></button>
+        <button class="tile" data-go="clients"><b>Clientes</b><span>Cadastro de clientes e motos</span></button>
+        <button class="tile admin-only" data-go="history"><b>Registro de vendas</b><span>Buscar, filtrar, reimprimir e cancelar</span></button>
+        <button class="tile admin-only" data-go="products"><b>Produtos</b><span>Cadastro, compras e estoque</span></button>
+        <button class="tile admin-only" data-go="services"><b>Serviços</b><span>Serviços e preços personalizados</span></button>
+        <button class="tile admin-only" data-go="debtors"><b>Devedores</b><span id="debtTotal">Fiado e valores a receber</span></button>
+        <button class="tile admin-only" data-go="analysis"><b>Análises</b><span>Gráficos de vendas, lucro e clientes</span></button>
+      </div>
+      <div class="card admin-only hidden" id="lowStock"></div>
+      <div class="adm admin-only"><span class="muted">Administração:</span>
+        <button class="btn ghost small" data-go="users">Usuários</button>
+        <button class="btn ghost small" data-go="audit">Histórico de alterações</button>
+        <button class="btn ghost small" onclick="baixarBase()">Baixar base de dados</button>
+      </div>
+    </div>
+
+    <!-- NOVA VENDA -->
+    <div id="v-sale" class="hidden">
+      <div style="margin-bottom:12px"><button class="btn ghost small" data-go="home">← Voltar ao início</button></div>
+      <div class="card">
+        <div class="seg">
+          <button class="btn ghost on" id="modoOficina">Venda da oficina</button>
+          <button class="btn ghost" id="modoRapida">Venda rápida (balcão)</button>
+        </div>
+        <p class="muted quick-only" style="margin:10px 0 0">Para bebidas e itens vendidos a quem está de passagem: sem cadastro de cliente e sem precisar imprimir nota.</p>
+      </div>
+      <div class="card">
+        <h2 id="sCardTitle">Cliente</h2>
+        <div class="row">
+          <div id="sPicker" class="oficina-only" style="flex:1 1 100%"></div>
+          <label class="oficina-only">Nome do cliente <input id="sCustomer"></label>
+          <label class="oficina-only">Moto (modelo) <input id="sMoto" placeholder="ex.: Honda CG 160"></label>
+          <label class="oficina-only">Placa (opcional) <input id="sPlate" placeholder="ABC1D23"></label>
+          <label class="oficina-only">Quilometragem (km) <input id="sKm" type="number" min="0" step="1" placeholder="opcional"></label>
+          <label>Pagamento
+            <select id="sPay"><option>Dinheiro</option><option>Pix</option><option>Cartão de débito</option><option>Cartão de crédito</option><option>Fiado</option></select>
+          </label>
+        </div>
+      </div>
+      <div class="card">
+        <h2>Adicionar item</h2>
+        <div class="row">
+          <label style="flex:2">Buscar por código ou nome <input id="iQ" autocomplete="off" placeholder="ex.: P0012 ou óleo"></label>
+          <label>Tipo
+            <select id="iType"><option value="product">Produto</option><option value="service">Serviço</option></select>
+          </label>
+          <label style="flex:2">Item <select id="iItem"></select></label>
+          <label style="max-width:90px">Qtd. <input id="iQty" type="number" min="1" value="1"></label>
+          <label>Preço de venda <input id="iPrice" type="number" min="0" step="0.01"></label>
+          <button class="btn" id="addLine">Adicionar</button>
+        </div>
+      </div>
+      <div class="card">
+        <h2>Itens desta venda</h2>
+        <div class="overflow"><table>
+          <thead><tr><th>Item</th><th class="num">Qtd.</th><th class="num">Preço unit.</th><th class="num">Subtotal</th><th></th></tr></thead>
+          <tbody id="lines"></tbody>
+        </table></div>
+        <div class="total" id="saleTotal">R$ 0,00</div>
+        <div class="row" style="justify-content:flex-end;margin-top:12px">
+          <label class="chip oficina-only" style="margin-right:auto"><input type="checkbox" id="sKeep"> Manter os dados do cliente depois de salvar</label>
+          <span class="msg" id="sMsg"></span>
+          <button class="btn quick-only" id="saveSaleQuick">Salvar venda</button>
+          <button class="btn" id="saveSalePrint">Salvar e imprimir nota</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- AGENDA -->
+    <div id="v-agenda" class="hidden">
+      <div style="margin-bottom:12px"><button class="btn ghost small" data-go="home">← Voltar ao início</button></div>
+      <div class="agenda-grid">
+        <div class="card">
+          <div class="agtop">
+            <button class="btn ghost small" id="agPrev">‹</button>
+            <h2 id="agTitulo"></h2>
+            <button class="btn ghost small" id="agHoje">Hoje</button>
+            <button class="btn ghost small" id="agNext">›</button>
+          </div>
+          <div class="cal" id="agCal"></div>
+        </div>
+        <div>
+          <div class="card">
+            <h2 id="agDiaTitulo" style="text-transform:capitalize"></h2>
+            <div id="agLista"></div>
+          </div>
+          <div class="card">
+            <h2>Novo agendamento</h2>
+            <div class="row" style="flex-direction:column;align-items:stretch">
+              <label>Hora <input id="aTime" type="time" value="09:00"></label>
+              <div id="aPicker"></div>
+              <label>Nome do cliente <input id="aName"></label>
+              <label>Moto (modelo) <input id="aMoto"></label>
+              <label>Placa (opcional) <input id="aPlate"></label>
+              <label>Serviço <input id="aServ" list="servList" placeholder="ex.: Revisão completa"></label>
+              <label>Observação <input id="aNote"></label>
+              <button class="btn" id="addAg">Agendar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- REGISTRO DE VENDAS -->
+    <div id="v-history" class="hidden">
+      <div style="margin-bottom:12px"><button class="btn ghost small" data-go="home">← Voltar ao início</button></div>
+      <div class="card">
+        <h2>Registro de vendas</h2>
+        <div class="row">
+          <label style="flex:2">Buscar (cliente, moto, placa, item, nº) <input id="hQ"></label>
+          <label>De <input id="hFrom" type="date"></label>
+          <label>Até <input id="hTo" type="date"></label>
+          <label>Tipo <select id="hType"><option value="">Todas</option><option value="oficina">Oficina</option><option value="balcao">Balcão</option></select></label>
+          <label>Situação <select id="hSt"><option value="">Todas</option><option value="ativa">Ativas</option><option value="cancelada">Canceladas</option></select></label>
+        </div>
+        <div class="muted" id="hSummary" style="margin-top:10px"></div>
+        <div class="overflow"><table>
+          <thead><tr>
+            <th data-t="h" data-k="numero">Nº</th><th data-t="h" data-k="created_at">Data</th><th data-t="h" data-k="customer">Cliente</th>
+            <th data-t="h" data-k="motorcycle">Moto</th><th data-t="h" data-k="payment">Pagamento</th><th>Itens</th>
+            <th class="num" data-t="h" data-k="total">Total</th><th></th></tr></thead>
+          <tbody id="hBody"></tbody>
+        </table></div>
+      </div>
+    </div>
+
+    <!-- PRODUTOS -->
+    <div id="v-products" class="hidden">
+      <div style="margin-bottom:12px"><button class="btn ghost small" data-go="home">← Voltar ao início</button></div>
+      <div class="card">
+        <div class="seg">
+          <button class="btn ghost on" id="modoNovo">Cadastrar produto novo</button>
+          <button class="btn ghost" id="modoCompra">Registrar compra de estoque</button>
+        </div>
+        <div id="formNovo" style="margin-top:16px">
+          <div class="row">
+            <label style="max-width:120px">Código <input id="pCode" placeholder="automático"></label>
+            <label style="flex:2">Nome <input id="pName"></label>
+            <label>Categoria <input id="pCat" list="catList" placeholder="ex.: Bebidas"></label>
+            <label>Preço pago (custo) <input id="pCost" type="number" min="0" step="0.01"></label>
+            <label>Preço de venda <input id="pPrice" type="number" min="0" step="0.01"></label>
+            <label style="max-width:100px">Estoque inicial <input id="pStock" type="number" min="0" value="0"></label>
+            <label style="max-width:140px">Estoque mínimo (aviso) <input id="pMin" type="number" min="0" value="5"></label>
+            <button class="btn" id="addProduct">Salvar produto</button>
+          </div>
+          <div class="help" style="margin-top:8px">Estoque mínimo é só um aviso: quando o estoque chegar nesse número, o produto aparece em "Estoque baixo" na página inicial. Ele não impede vendas. Deixe o código em branco para o sistema gerar sozinho.</div>
+          <div class="hint" id="pHint"></div>
+        </div>
+        <div id="formCompra" class="hidden" style="margin-top:16px">
+          <div class="row">
+            <label style="flex:2">Buscar produto (código ou nome) <input id="buQ" autocomplete="off"></label>
+            <label style="flex:2">Produto <select id="buProd"></select></label>
+            <label style="max-width:110px">Quantidade <input id="buQty" type="number" min="1" step="1"></label>
+            <label>Custo unitário desta compra (R$) <input id="buCost" type="number" min="0" step="0.01"></label>
+            <label>Novo preço de venda <input id="buPrice" type="number" min="0" step="0.01" placeholder="não alterar"></label>
+            <label>Fornecedor <input id="buSup" list="supList"></label>
+            <button class="btn" id="addCompra">Registrar compra</button>
+          </div>
+          <div class="help" style="margin-top:8px">A quantidade é somada ao estoque e o custo do produto passa a ser a média entre o que já estava em estoque e esta compra (ex.: 10 un. a R$ 5 + 10 un. a R$ 7 = custo médio R$ 6). O preço de venda é sugerido em cima do novo custo médio (+30%); apague o campo para não mudar o preço.</div>
+          <div class="hint" id="buHint"></div>
+        </div>
+      </div>
+      <div class="card">
+        <h2>Produtos disponíveis</h2>
+        <label>Buscar por código, nome ou categoria <input id="pQ"></label>
+        <div class="muted" style="margin-top:8px">Linhas em laranja estão com estoque igual ou abaixo do mínimo de aviso.</div>
+        <div class="overflow"><table>
+          <thead><tr>
+            <th data-t="p" data-k="code">Código</th><th data-t="p" data-k="name">Nome</th><th data-t="p" data-k="category">Categoria</th>
+            <th class="num" data-t="p" data-k="cost_price">Custo médio</th><th class="num" data-t="p" data-k="sale_price">Preço de venda</th>
+            <th class="num" data-t="p" data-k="stock">Estoque</th><th class="num" data-t="p" data-k="min_stock">Mínimo (aviso)</th><th></th></tr></thead>
+          <tbody id="pBody"></tbody>
+        </table></div>
+      </div>
+      <div class="card">
+        <h2>Compras registradas</h2>
+        <div class="overflow"><table>
+          <thead><tr>
+            <th data-t="pur" data-k="created_at">Data</th><th data-t="pur" data-k="product_name">Produto</th><th class="num" data-t="pur" data-k="qty">Qtd.</th>
+            <th class="num" data-t="pur" data-k="unit_cost">Custo unit.</th><th class="num" data-t="pur" data-k="total">Total</th>
+            <th data-t="pur" data-k="supplier">Fornecedor</th><th data-t="pur" data-k="user_email">Registrado por</th></tr></thead>
+          <tbody id="purBody"></tbody>
+        </table></div>
+      </div>
+    </div>
+
+    <!-- SERVIÇOS -->
+    <div id="v-services" class="hidden">
+      <div style="margin-bottom:12px"><button class="btn ghost small" data-go="home">← Voltar ao início</button></div>
+      <div class="card">
+        <h2>Adicionar serviço personalizado</h2>
+        <div class="row">
+          <label style="max-width:120px">Código <input id="svCode" placeholder="automático"></label>
+          <label style="flex:2">Nome do serviço <input id="svName"></label>
+          <label>Categoria <input id="svCat" list="catList" placeholder="ex.: Mecânica"></label>
+          <label>Preço <input id="svPrice" type="number" min="0" step="0.01"></label>
+          <button class="btn" id="addService">Salvar</button>
+        </div>
+        <div class="hint" id="svHint"></div>
+      </div>
+      <div class="card">
+        <h2>Serviços oferecidos</h2>
+        <div class="overflow"><table>
+          <thead><tr>
+            <th data-t="sv" data-k="code">Código</th><th data-t="sv" data-k="name">Serviço</th><th data-t="sv" data-k="category">Categoria</th>
+            <th class="num" data-t="sv" data-k="price">Preço</th><th></th></tr></thead>
+          <tbody id="svBody"></tbody>
+        </table></div>
+      </div>
+    </div>
+
+    <!-- CLIENTES -->
+    <div id="v-clients" class="hidden">
+      <div style="margin-bottom:12px"><button class="btn ghost small" data-go="home">← Voltar ao início</button></div>
+      <div class="card">
+        <h2>Cadastrar cliente</h2>
+        <div class="row">
+          <label style="flex:2">Nome <input id="cName"></label>
+          <label>Telefone <input id="cPhone"></label>
+          <label>Moto (modelo) <input id="cMoto"></label>
+          <label>Placa (opcional) <input id="cPlate" placeholder="ABC1D23"></label>
+        </div>
+        <details class="opt" id="cOpt" style="margin:14px 0">
+          <summary>Dados opcionais (endereço, sexo e faixa etária, para análises de marketing)</summary>
+          <div class="row" style="margin-top:10px">
+            <label style="flex:3">Endereço <input id="cAddr"></label>
+            <label>Sexo <select id="cGender"><option value="">Não informar</option><option>Homem</option><option>Mulher</option><option>Outro</option></select></label>
+            <label>Faixa etária <select id="cAge"><option value="">Não informar</option><option>Menos de 20</option><option>20 a 29</option><option>30 a 39</option><option>40 a 49</option><option>50 a 59</option><option>60 a 69</option><option>70 ou mais</option></select></label>
+          </div>
+        </details>
+        <button class="btn" id="addClient">Salvar cliente</button>
+      </div>
+      <div class="card">
+        <h2>Clientes</h2>
+        <label>Buscar <input id="cQ" placeholder="nome, telefone, moto ou placa"></label>
+        <div class="overflow"><table>
+          <thead><tr>
+            <th data-t="c" data-k="name">Nome</th><th data-t="c" data-k="phone">Telefone</th><th data-t="c" data-k="motorcycle">Moto</th><th data-t="c" data-k="plate">Placa</th>
+            <th class="num admin-only" data-t="c" data-k="deve">Deve</th><th class="admin-only"></th></tr></thead>
+          <tbody id="cBody"></tbody>
+        </table></div>
+      </div>
+    </div>
+
+    <!-- DEVEDORES -->
+    <div id="v-debtors" class="hidden">
+      <div style="margin-bottom:12px"><button class="btn ghost small" data-go="home">← Voltar ao início</button></div>
+      <div class="card">
+        <h2>Registrar dívida</h2>
+        <p class="muted" style="margin-top:0">Para fiado antigo ou sem nota. Dívidas de vendas feitas no sistema já aparecem na lista abaixo.</p>
+        <div class="row">
+          <div id="dPicker" style="flex:1 1 100%"></div>
+          <label style="flex:2">Descrição <input id="dDesc" placeholder="ex.: Revisão em março"></label>
+          <label>Valor (R$) <input id="dAmount" type="number" min="0" step="0.01"></label>
+          <label>Data (opcional) <input id="dDate" type="date"></label>
+          <button class="btn" id="addDebt">Registrar dívida</button>
+        </div>
+      </div>
+      <div class="card">
+        <h2>Devedores (fiado)</h2>
+        <div class="row">
+          <div class="muted" id="dSummary" style="flex:2"></div>
+          <label style="max-width:220px">Forma de recebimento
+            <select id="dMethod"><option>Dinheiro</option><option>Pix</option><option>Cartão de débito</option><option>Cartão de crédito</option></select>
+          </label>
+        </div>
+        <div class="overflow"><table>
+          <thead><tr>
+            <th data-t="d" data-k="nome">Cliente</th><th data-t="d" data-k="fone">Telefone</th><th data-t="d" data-k="numero">Nota</th><th data-t="d" data-k="created_at">Data</th>
+            <th class="num" data-t="d" data-k="total">Total</th><th class="num" data-t="d" data-k="paid">Pago</th><th class="num" data-t="d" data-k="falta">Falta</th><th></th></tr></thead>
+          <tbody id="dBody"></tbody>
+        </table></div>
+      </div>
+    </div>
+
+    <!-- ANÁLISES -->
+    <div id="v-analysis" class="hidden">
+      <div style="margin-bottom:12px"><button class="btn ghost small" data-go="home">← Voltar ao início</button></div>
+      <div class="card">
+        <div class="seg">
+          <button class="btn ghost on" id="anModoV">Vendas e gráficos</button>
+          <button class="btn ghost" id="anModoE">Estoque e projeções</button>
+        </div>
+      </div>
+      <div id="anVendas">
+      <div class="card">
+        <h2>Análises</h2>
+        <div class="row">
+          <label>Ano <select id="anAno"></select></label>
+          <label>Mês <select id="anMes"></select></label>
+          <label>Categoria <select id="anCat"></select></label>
+          <label style="flex:2">Produto ou serviço <select id="anItem"></select></label>
+          <label>Tipo de venda <select id="anTipo"><option value="">Todas</option><option value="oficina">Oficina</option><option value="balcao">Balcão</option></select></label>
+        </div>
+        <div id="anChips" style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap;align-items:center"></div>
+      </div>
+      <div class="kpis" id="anKpis"></div>
+      <div class="charts" id="anCharts"></div>
+      </div>
+
+      <div id="anEstoque" class="hidden">
+        <div class="card">
+          <h2>Estoque e projeções</h2>
+          <div class="row">
+            <label style="max-width:260px">Base das vendas
+              <select id="esPer"><option value="30">Últimos 30 dias</option><option value="60">Últimos 60 dias</option><option value="90" selected>Últimos 90 dias</option><option value="180">Últimos 180 dias</option><option value="365">Último ano</option><option value="0">Desde a primeira venda</option></select>
+            </label>
+          </div>
+          <p class="help" style="margin:10px 0 0">Projeção simples: repete o ritmo de vendas do período escolhido no próximo período do mesmo tamanho, limitada ao estoque que existe hoje. Não considera sazonalidade, promoções nem novas compras. Vale para produtos (serviços não têm estoque).</p>
+        </div>
+        <div class="kpis" id="esKpis"></div>
+        <div class="charts">
+          <div class="card" style="margin:0"><h2>Comparativo</h2><div style="position:relative;height:280px"><canvas id="ch_est"></canvas></div></div>
+          <div class="card" style="margin:0" id="esCenarios"></div>
+        </div>
+        <div class="charts" id="esListas" style="margin-top:20px"></div>
+        <div class="card" style="margin-top:20px">
+          <h2>Produto a produto</h2>
+          <div class="muted">Curva ABC: A = produtos que somam 80% do faturamento, B = próximos 15%, C = últimos 5%. "Cobertura" = quantos dias o estoque dura no ritmo do período. "Repor" = vai acabar antes do fim do próximo período. "Parado" = tem estoque e não vendeu nada no período.</div>
+          <div class="overflow"><table>
+            <thead><tr>
+              <th data-t="est" data-k="code">Código</th><th data-t="est" data-k="name">Produto</th>
+              <th class="num" data-t="est" data-k="stock">Estoque</th><th class="num" data-t="est" data-k="cost">Custo médio</th><th class="num" data-t="est" data-k="price">Preço</th>
+              <th class="num" data-t="est" data-k="margem">Margem</th><th class="num" data-t="est" data-k="q">Vendido (un.)</th>
+              <th class="num" data-t="est" data-k="rec">Faturamento</th><th class="num" data-t="est" data-k="luc">Lucro</th>
+              <th class="num" data-t="est" data-k="cob">Cobertura</th><th data-t="est" data-k="abc">ABC</th><th data-t="est" data-k="sit">Situação</th></tr></thead>
+            <tbody id="esBody"></tbody>
+          </table></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- USUÁRIOS -->
+    <div id="v-users" class="hidden">
+      <div style="margin-bottom:12px"><button class="btn ghost small" data-go="home">← Voltar ao início</button></div>
+      <div class="card">
+        <h2>Novo usuário</h2>
+        <div class="row">
+          <label style="flex:2">E-mail <input id="uEmail" type="email"></label>
+          <label>Senha (mín. 8 caracteres) <input id="uPass" type="password" autocomplete="new-password"></label>
+          <button class="btn" id="addUser">Criar usuário</button>
+        </div>
+        <label class="chip" style="margin-top:12px;width:fit-content"><input type="checkbox" id="uAdmin"> Criar como administrador (acesso total)</label>
+        <div class="msg" id="uMsg"></div>
+        <p class="help" style="margin:8px 0 0">O funcionário só consegue: fazer vendas (com os preços do cadastro), usar a agenda e cadastrar clientes. Não vê custos, lucro, registro de vendas nem devedores.</p>
+      </div>
+      <div class="card">
+        <h2>Usuários</h2>
+        <div class="overflow"><table>
+          <thead><tr><th data-t="u" data-k="email">E-mail</th><th data-t="u" data-k="role">Tipo</th><th data-t="u" data-k="created_at">Criado em</th></tr></thead>
+          <tbody id="uBody"></tbody>
+        </table></div>
+      </div>
+    </div>
+
+    <!-- HISTÓRICO DE ALTERAÇÕES -->
+    <div id="v-audit" class="hidden">
+      <div style="margin-bottom:12px"><button class="btn ghost small" data-go="home">← Voltar ao início</button></div>
+      <div class="card">
+        <h2>Histórico de alterações</h2>
+        <div class="muted">Últimas 200 ações.</div>
+        <div class="overflow"><table>
+          <thead><tr>
+            <th data-t="a" data-k="created_at">Data</th><th data-t="a" data-k="user_email">Usuário</th><th data-t="a" data-k="action">Ação</th>
+            <th data-t="a" data-k="table_name">Onde</th><th>Detalhes</th></tr></thead>
+          <tbody id="aBody"></tbody>
+        </table></div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<datalist id="catList"></datalist>
+<datalist id="servList"></datalist>
+<datalist id="supList"></datalist>
+
+<dialog id="pwdDlg" class="card">
+  <h2>Alterar senha</h2>
+  <div class="row" style="flex-direction:column;align-items:stretch">
+    <label>Nova senha (mínimo 8 caracteres) <input id="pw1" type="password" autocomplete="new-password"></label>
+    <label>Repita a nova senha <input id="pw2" type="password" autocomplete="new-password"></label>
+    <div class="msg" id="pwMsg"></div>
+  </div>
+  <div class="row" style="justify-content:space-between;margin-top:14px">
+    <button class="btn ghost small" id="pwMail">Receber link por e-mail</button>
+    <span class="row"><button class="btn ghost" onclick="$('pwdDlg').close()">Cancelar</button><button class="btn" id="pwSave">Salvar senha</button></span>
+  </div>
+</dialog>
+
+<dialog id="dlg" class="card">
+  <h2 id="dlgTitle"></h2>
+  <div id="dlgFields" class="row" style="flex-direction:column;align-items:stretch"></div>
+  <div class="row" style="justify-content:flex-end;margin-top:14px">
+    <button class="btn ghost" onclick="$('dlg').close()">Cancelar</button>
+    <button class="btn" id="dlgSave">Salvar alterações</button>
+  </div>
+</dialog>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.js"></script>
+<script>
+/* ================== CONFIGURAÇÃO ================== */
+const SUPABASE_URL = 'https://ayrpnksfqtweauycbptr.supabase.co';
+const SUPABASE_KEY = 'sb_publishable__H5L1lU3HnUpR7-XVts2Sg_p9Fs8mf6';
+const MARKUP = 30;                 // preço sugerido = preço pago + 30%
+const ESTOQUE_MIN_PADRAO = 5;      // valor inicial do estoque mínimo ao cadastrar produto
+const NOTA_NOME = 'zecamotos';     // só aparece na nota se o logo não carregar
+const NOTA_INFO = '';              // ex.: 'Rua das Flores, 123 - Tel. (11) 99999-9999'
+const NOTA_LOGO = 'logo.png';      // arquivo do logo, na mesma pasta do index.html (deixe '' para não usar)
+const BALCAO_NOME = 'Venda de balcão';
+/* ================================================== */
+
+const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const $ = id => document.getElementById(id);
+const money = n => Number(n || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const sugerir = c => Math.round(c * (1 + MARKUP / 100) * 100) / 100;
+const typeLabel = t => t === 'product' ? 'produto' : 'serviço';
+const fmtData = d => new Date(d).toLocaleString('pt-BR');
+const hora = d => new Date(d).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+const ymd = d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+const erro = e => { const m = e.message || String(e); alert(/duplicate key/.test(m) ? 'Já existe um item com esse código.' : m); };
+const faltaDe = d => Number(d.total) - Number(d.paid);
+
+let me = { email: '', role: 'funcionario' };
+let products = [], services = [], lines = [], salesCache = [], clientsAll = [], clients = [], debts = [];
+let comprasCache = [], usersCache = [], auditCache = [], hojeCount = 0;
+const isAdmin = () => me.role === 'admin';
+
+document.addEventListener('input', e => {
+  const t = e.target;
+  if (t.matches && t.matches('input[id$="Plate"],input[data-k="plate"]')) { const p = t.selectionStart; t.value = t.value.toUpperCase(); try { t.setSelectionRange(p, p); } catch {} }
+});
+
+/* ---------- ordenar tabelas clicando no título da coluna ---------- */
+const ORD = {}, RENDER = {};
+function ordenar(t, arr, get = {}) {
+  const o = ORD[t]; if (!o) return arr;
+  const f = get[o.k] || (x => x[o.k]);
+  return [...arr].sort((a, b) => {
+    let x = f(a), y = f(b); if (x == null) x = ''; if (y == null) y = '';
+    const r = typeof x === 'number' && typeof y === 'number' ? x - y : String(x).localeCompare(String(y), 'pt-BR', { numeric: true });
+    return o.dir * r;
+  });
+}
+function marcarSetas() {
+  document.querySelectorAll('th[data-k]').forEach(th => {
+    const o = ORD[th.dataset.t], on = !!o && o.k === th.dataset.k;
+    th.classList.toggle('asc', on && o.dir === 1); th.classList.toggle('desc', on && o.dir === -1);
+  });
+}
+document.addEventListener('click', e => {
+  const th = e.target.closest('th[data-k]'); if (!th) return;
+  const t = th.dataset.t, o = ORD[t];
+  ORD[t] = { k: th.dataset.k, dir: o && o.k === th.dataset.k ? -o.dir : 1 };
+  marcarSetas(); RENDER[t] && RENDER[t]();
+});
+
+/* ---------- busca de cliente com lista suspensa ---------- */
+const PICK = {};
+function pickerHTML(p) {
+  return `<div class="picker">
+    <div class="row">
+      <label style="flex:3">Buscar cliente cadastrado <input id="${p}Q" placeholder="digite o nome, telefone, moto ou placa" autocomplete="off"></label>
+      <button type="button" class="btn ghost" id="${p}NewBtn">+ Novo cliente</button>
+    </div>
+    <div id="${p}List" class="dd hidden"></div>
+    <input type="hidden" id="${p}Client">
+    <div id="${p}Sel" class="hint"></div>
+    <div class="row hidden" id="${p}NewBox" style="margin-top:6px">
+      <label style="flex:2">Nome <input id="${p}NName"></label>
+      <label>Telefone <input id="${p}NPhone"></label>
+      <label>Moto (modelo) <input id="${p}NMoto"></label>
+      <label>Placa (opcional) <input id="${p}NPlate"></label>
+      <button type="button" class="btn" id="${p}NSave">Salvar cliente</button>
+    </div>
+  </div>`;
+}
+const casaCliente = (c, q) => !q || [c.name, c.phone, c.motorcycle, c.plate].join(' ').toLowerCase().includes(q);
+function mostrarLista(p) {
+  const q = $(p + 'Q').value.trim().toLowerCase();
+  const l = clients.filter(c => casaCliente(c, q)).slice(0, 8);
+  $(p + 'List').innerHTML = l.map(c => `<div data-id="${c.id}"><b>${esc(c.name)}</b> <span class="muted">${esc(c.phone || '')} ${esc(c.motorcycle || '')} ${c.plate ? '[' + esc(c.plate) + ']' : ''}</span></div>`).join('')
+    || '<div class="muted">Nenhum cliente encontrado. Use "+ Novo cliente".</div>';
+  $(p + 'List').classList.remove('hidden');
+}
+function escolher(p, c) {
+  $(p + 'Client').value = c ? c.id : '';
+  $(p + 'Q').value = c ? c.name : '';
+  $(p + 'Sel').textContent = c ? `✓ Cliente selecionado: ${c.name}` : '';
+  $(p + 'List').classList.add('hidden');
+  if (PICK[p]) PICK[p](c);
+}
+const limparPicker = p => escolher(p, null);
+function setupPicker(p, aoEscolher) {
+  PICK[p] = aoEscolher;
+  $(p + 'Q').addEventListener('input', () => { $(p + 'Client').value = ''; $(p + 'Sel').textContent = ''; mostrarLista(p); });
+  $(p + 'Q').addEventListener('focus', () => mostrarLista(p));
+  $(p + 'Q').addEventListener('keydown', e => {
+    if (e.key !== 'Enter') return; e.preventDefault();
+    const c = clients.find(x => casaCliente(x, $(p + 'Q').value.trim().toLowerCase())); if (c) escolher(p, c);
+  });
+  $(p + 'List').addEventListener('mousedown', e => { const d = e.target.closest('[data-id]'); if (d) escolher(p, clients.find(x => x.id == d.dataset.id)); });
+  $(p + 'NewBtn').onclick = () => $(p + 'NewBox').classList.toggle('hidden');
+  $(p + 'NSave').onclick = async () => {
+    const name = $(p + 'NName').value.trim();
+    if (!name) return alert('Digite o nome do cliente.');
+    const { data, error } = await db.from('clients').insert({
+      name, phone: $(p + 'NPhone').value.trim(), motorcycle: $(p + 'NMoto').value.trim(), plate: $(p + 'NPlate').value.trim().toUpperCase() || null
+    }).select().single();
+    if (error) return erro(error);
+    ['NName', 'NPhone', 'NMoto', 'NPlate'].forEach(i => $(p + i).value = '');
+    $(p + 'NewBox').classList.add('hidden');
+    await loadAll(); escolher(p, data);
+  };
+}
+document.addEventListener('click', e => document.querySelectorAll('.dd').forEach(dd => { if (!dd.closest('.picker').contains(e.target)) dd.classList.add('hidden'); }));
+const fillPickers = () => ['s', 'd', 'a'].forEach(p => { if ($(p + 'Client').value && !clients.find(c => c.id == $(p + 'Client').value)) limparPicker(p); });
+
+$('sPicker').innerHTML = pickerHTML('s'); $('dPicker').innerHTML = pickerHTML('d'); $('aPicker').innerHTML = pickerHTML('a');
+setupPicker('s', c => { if (c) { $('sCustomer').value = c.name; $('sMoto').value = c.motorcycle || ''; $('sPlate').value = c.plate || ''; } });
+setupPicker('d');
+setupPicker('a', c => { if (c) { $('aName').value = c.name; $('aMoto').value = c.motorcycle || ''; $('aPlate').value = c.plate || ''; } });
+
+/* ---------- login ---------- */
+async function start() {
+  const { data: { session } } = await db.auth.getSession();
+  if (!session) return;
+  const { data: p } = await db.from('profiles').select('role').eq('id', session.user.id).maybeSingle();
+  me = { email: session.user.email, role: p?.role || 'funcionario' };
+  document.body.classList.toggle('is-admin', isAdmin());
+  $('who').textContent = `${me.email} (${isAdmin() ? 'administrador' : 'funcionário'})`;
+  $('iPrice').readOnly = !isAdmin();
+  setMode(quick);
+  $('login').classList.add('hidden'); $('app').classList.remove('hidden');
+  await loadAll(); go('home');
+}
+$('lBtn').onclick = async () => {
+  $('lMsg').textContent = ''; $('lMsg').style.color = '';
+  const { error } = await db.auth.signInWithPassword({ email: $('lUser').value.trim(), password: $('lPass').value });
+  if (error) { $('lMsg').textContent = 'E-mail ou senha incorretos.'; return; }
+  start();
+};
+$('lPass').addEventListener('keydown', e => e.key === 'Enter' && $('lBtn').click());
+$('logout').onclick = async () => { await db.auth.signOut(); location.reload(); };
+
+/* ---------- senha ---------- */
+const urlSite = () => location.origin + location.pathname;
+$('forgotBtn').onclick = async () => {
+  const email = $('lUser').value.trim();
+  if (!email) { $('lMsg').textContent = 'Digite seu e-mail no campo acima e clique de novo.'; return; }
+  const { error } = await db.auth.resetPasswordForEmail(email, { redirectTo: urlSite() });
+  $('lMsg').style.color = error ? '' : 'var(--ok)';
+  $('lMsg').textContent = error ? error.message : 'Se o e-mail estiver cadastrado, enviamos um link para criar uma nova senha.';
+};
+function abrirSenha() { ['pw1', 'pw2'].forEach(i => $(i).value = ''); $('pwMsg').textContent = ''; $('pwMsg').style.color = ''; $('pwdDlg').showModal(); }
+$('pwdBtn').onclick = abrirSenha;
+$('pwSave').onclick = async () => {
+  const a = $('pw1').value; $('pwMsg').style.color = '';
+  if (a.length < 8) { $('pwMsg').textContent = 'A senha precisa ter pelo menos 8 caracteres.'; return; }
+  if (a !== $('pw2').value) { $('pwMsg').textContent = 'As senhas não são iguais.'; return; }
+  const { error } = await db.auth.updateUser({ password: a });
+  if (error) { $('pwMsg').textContent = error.message; return; }
+  $('pwdDlg').close(); alert('Senha alterada com sucesso.');
+};
+$('pwMail').onclick = async () => {
+  const { error } = await db.auth.resetPasswordForEmail(me.email, { redirectTo: urlSite() });
+  $('pwMsg').style.color = error ? '' : 'var(--ok)';
+  $('pwMsg').textContent = error ? error.message : `Link enviado para ${me.email}.`;
+};
+db.auth.onAuthStateChange(ev => { if (ev === 'PASSWORD_RECOVERY') setTimeout(abrirSenha, 400); });
+
+/* ---------- navegação ---------- */
+const VIEWS = ['home', 'sale', 'agenda', 'history', 'products', 'services', 'clients', 'debtors', 'analysis', 'users', 'audit'];
+const LIVRES = ['home', 'sale', 'agenda', 'clients'];   // o que o funcionário pode abrir
+function go(v) {
+  if (!isAdmin() && !LIVRES.includes(v)) v = 'home';
+  VIEWS.forEach(x => $('v-' + x).classList.toggle('hidden', x !== v));
+  if (v === 'home') renderHome();
+  if (v === 'history') loadHistory();
+  if (v === 'products') loadCompras();
+  if (v === 'clients') renderClients();
+  if (v === 'debtors') renderDebtors();
+  if (v === 'agenda') loadAgenda();
+  if (v === 'analysis') loadAnalise();
+  if (v === 'users') loadUsers();
+  if (v === 'audit') loadAudit();
+  document.querySelectorAll('.nbtn').forEach(b => b.classList.toggle('on', b.dataset.go === v));
+  scrollTo(0, 0);
+}
+document.addEventListener('click', e => { const g = e.target.closest('[data-go]'); if (g) go(g.dataset.go); });
+
+/* ---------- carregar dados ---------- */
+async function loadAll() {
+  const adm = isAdmin(), h = new Date(), ini = new Date(h.getFullYear(), h.getMonth(), h.getDate()), fim = new Date(+ini + 864e5);
+  const [p, sv, c, d, ag] = await Promise.all([
+    adm ? db.from('products').select('*').eq('active', true).order('name') : db.from('products_pub').select('*').eq('active', true).order('name'),
+    db.from('services').select('*').eq('active', true).order('name'),
+    db.from('clients').select('*').order('name'),
+    adm ? db.from('sales').select('id,numero,created_at,client_id,customer,total,paid,items').eq('payment', 'Fiado').eq('status', 'ativa').order('created_at') : Promise.resolve({ data: [] }),
+    db.from('appointments').select('id').eq('status', 'agendado').gte('scheduled_at', ini.toISOString()).lt('scheduled_at', fim.toISOString())
+  ]);
+  const e = p.error || sv.error || c.error || d.error || ag.error;
+  if (e) return erro('Erro no banco de dados: ' + e.message);
+  products = p.data; services = sv.data; fillCats();
+  clientsAll = c.data; clients = c.data.filter(x => x.active);
+  debts = d.data.filter(x => faltaDe(x) > 0.004);
+  hojeCount = ag.data.length;
+  renderProducts(); renderServices(); fillItemSelect(); fillCompraSel(); fillPickers(); renderClients(); renderDebtors(); renderHome();
+}
+function fillCats() {
+  const cats = [...new Set([...products, ...services].map(x => x.category).filter(Boolean))].sort();
+  $('catList').innerHTML = cats.map(c => `<option value="${esc(c)}">`).join('');
+  $('servList').innerHTML = services.map(s => `<option value="${esc(s.name)}">`).join('');
+}
+
+/* ---------- início ---------- */
+function renderHome() {
+  const falta = debts.reduce((t, d) => t + faltaDe(d), 0);
+  $('debtTotal').textContent = falta > 0.004 ? `A receber: ${money(falta)}` : 'Fiado e valores a receber';
+  $('agTile').textContent = hojeCount ? `Hoje: ${hojeCount} serviço(s) agendado(s)` : 'Calendário de serviços';
+  const low = isAdmin() ? products.filter(p => p.stock <= p.min_stock) : [];
+  $('lowStock').classList.toggle('hidden', !low.length);
+  $('lowStock').innerHTML = low.length ? `<h2>Estoque baixo</h2><ul style="margin:0">${low.map(p =>
+    `<li>${esc(p.name)}: ${p.stock} un. (aviso a partir de ${p.min_stock})</li>`).join('')}</ul>` : '';
+}
+
+/* ---------- produtos ---------- */
+function setModoProd(compra) {
+  $('formNovo').classList.toggle('hidden', compra); $('formCompra').classList.toggle('hidden', !compra);
+  $('modoNovo').classList.toggle('on', !compra); $('modoCompra').classList.toggle('on', compra);
+}
+$('modoNovo').onclick = () => setModoProd(false);
+$('modoCompra').onclick = () => setModoProd(true);
+
+function renderProducts() {
+  const q = $('pQ').value.toLowerCase();
+  const l = ordenar('p', products.filter(p => !q || [p.code, p.name, p.category].join(' ').toLowerCase().includes(q)));
+  $('pBody').innerHTML = l.map(p => `<tr class="${p.stock <= p.min_stock ? 'low' : ''}">
+    <td>${esc(p.code)}</td><td>${esc(p.name)}</td><td>${esc(p.category)}</td>
+    <td class="num">${money(p.cost_price)}</td><td class="num">${money(p.sale_price)}</td><td class="num">${p.stock}</td>
+    <td class="num"><input type="number" min="0" value="${p.min_stock}" style="width:70px" title="Avisa quando o estoque chegar a este número" onchange="setMin(${p.id}, this.value)"></td>
+    <td class="num"><button class="btn ghost small" onclick="editar('products',${p.id})">Editar</button> <button class="btn ghost small" onclick="arquivar('products',${p.id})">Arquivar</button></td></tr>`).join('')
+    || '<tr><td colspan="8" class="muted">Nenhum produto encontrado.</td></tr>';
+}
+RENDER.p = renderProducts;
+$('pQ').addEventListener('input', renderProducts);
+async function setMin(id, v) {
+  const { error } = await db.from('products').update({ min_stock: Math.max(0, parseInt(v) || 0) }).eq('id', id);
+  if (error) erro(error); loadAll();
+}
+$('pCost').oninput = () => {
+  const c = parseFloat($('pCost').value);
+  if (isNaN(c)) { $('pHint').textContent = ''; return; }
+  $('pPrice').value = sugerir(c).toFixed(2);
+  $('pHint').textContent = `Preço de venda sugerido: ${money(sugerir(c))} (preço pago + ${MARKUP}%). Você pode alterar.`;
+};
+$('pMin').value = ESTOQUE_MIN_PADRAO;
+$('addProduct').onclick = async () => {
+  const name = $('pName').value.trim();
+  if (!name) return alert('Digite o nome do produto.');
+  const { data, error } = await db.from('products').insert({
+    code: $('pCode').value.trim() || null, category: $('pCat').value.trim() || null,
+    name, cost_price: +$('pCost').value || 0, sale_price: +$('pPrice').value || 0,
+    stock: parseInt($('pStock').value) || 0, min_stock: parseInt($('pMin').value) || 0
+  }).select('code').single();
+  if (error) return erro(error);
+  ['pCode', 'pCat', 'pName', 'pCost', 'pPrice'].forEach(i => $(i).value = ''); $('pStock').value = 0; $('pMin').value = ESTOQUE_MIN_PADRAO;
+  $('pHint').textContent = `Produto salvo. Código gerado: ${data.code}`;
+  loadAll();
+};
+
+/* ---------- compras de estoque ---------- */
+function fillCompraSel() {
+  const q = $('buQ').value.trim().toLowerCase();
+  $('buProd').innerHTML = products.filter(p => !q || [p.code, p.name].join(' ').toLowerCase().includes(q))
+    .map(p => `<option value="${p.id}">${esc(p.code)} - ${esc(p.name)}</option>`).join('');
+  onCompraProd();
+}
+function onCompraProd() {
+  const p = products.find(x => x.id == $('buProd').value);
+  $('buCost').value = p ? p.cost_price : ''; $('buPrice').value = '';
+  $('buHint').textContent = p ? `Estoque atual: ${p.stock}. Custo médio atual: ${money(p.cost_price)}. Preço de venda atual: ${money(p.sale_price)}.` : '';
+}
+$('buQ').addEventListener('input', fillCompraSel);
+$('buProd').addEventListener('change', onCompraProd);
+function previaCompra() {
+  const p = products.find(x => x.id == $('buProd').value), q = parseInt($('buQty').value), c = parseFloat($('buCost').value);
+  if (!p || !(q > 0) || isNaN(c)) return;
+  const novo = p.stock > 0 ? Math.round((p.stock * p.cost_price + q * c) / (p.stock + q) * 100) / 100 : c;
+  $('buPrice').value = sugerir(novo).toFixed(2);
+  $('buHint').textContent = `Custo médio: ${money(p.cost_price)} → ${money(novo)} (estoque ${p.stock} + ${q}). Preço de venda sugerido: ${money(sugerir(novo))}.`;
+}
+$('buCost').oninput = previaCompra; $('buQty').oninput = previaCompra;
+$('addCompra').onclick = async () => {
+  const id = Number($('buProd').value), qty = parseInt($('buQty').value), custo = parseFloat($('buCost').value), preco = parseFloat($('buPrice').value);
+  if (!id) return alert('Escolha o produto.');
+  if (!(qty > 0)) return alert('Digite a quantidade comprada.');
+  if (!(custo >= 0)) return alert('Digite o custo unitário.');
+  const { error } = await db.rpc('register_purchase', { p_product: id, p_qty: qty, p_unit_cost: custo, p_supplier: $('buSup').value.trim() || null, p_new_price: isNaN(preco) ? null : preco });
+  if (error) return erro(error);
+  $('buQty').value = ''; $('buQ').value = '';
+  await loadAll(); loadCompras();
+  $('buHint').textContent = 'Compra registrada. Estoque atualizado e custo médio recalculado.';
+};
+async function loadCompras() {
+  if (!isAdmin()) return;
+  const { data, error } = await db.from('purchases').select('*').order('created_at', { ascending: false }).limit(300);
+  if (error) return erro(error);
+  comprasCache = data;
+  $('supList').innerHTML = [...new Set(data.map(c => c.supplier).filter(Boolean))].map(s => `<option value="${esc(s)}">`).join('');
+  renderCompras();
+}
+function renderCompras() {
+  const l = ordenar('pur', comprasCache, { total: x => x.qty * x.unit_cost });
+  $('purBody').innerHTML = l.map(c => `<tr><td>${fmtData(c.created_at)}</td><td>${esc(c.product_name)}</td><td class="num">${c.qty}</td>
+    <td class="num">${money(c.unit_cost)}</td><td class="num">${money(c.qty * c.unit_cost)}</td><td>${esc(c.supplier)}</td><td>${esc(c.user_email)}</td></tr>`).join('')
+    || '<tr><td colspan="7" class="muted">Nenhuma compra registrada ainda.</td></tr>';
+}
+RENDER.pur = renderCompras;
+
+/* ---------- serviços ---------- */
+function renderServices() {
+  $('svBody').innerHTML = ordenar('sv', services).map(s => `<tr>
+    <td>${esc(s.code)}</td><td>${esc(s.name)}</td><td>${esc(s.category)}</td><td class="num">${money(s.price)}</td>
+    <td class="num"><button class="btn ghost small" onclick="editar('services',${s.id})">Editar</button> <button class="btn ghost small" onclick="arquivar('services',${s.id})">Arquivar</button></td></tr>`).join('')
+    || '<tr><td colspan="5" class="muted">Nenhum serviço ainda.</td></tr>';
+}
+RENDER.sv = renderServices;
+$('addService').onclick = async () => {
+  const name = $('svName').value.trim();
+  if (!name) return alert('Digite o nome do serviço.');
+  const { data, error } = await db.from('services').insert({ code: $('svCode').value.trim() || null, category: $('svCat').value.trim() || null, name, price: +$('svPrice').value || 0 }).select('code').single();
+  if (error) return erro(error);
+  ['svCode', 'svCat', 'svName', 'svPrice'].forEach(i => $(i).value = '');
+  $('svHint').textContent = `Serviço salvo. Código gerado: ${data.code}`;
+  loadAll();
+};
+async function arquivar(table, id) {
+  if (!confirm('Arquivar este item? Ele sai das listas, mas as vendas antigas continuam intactas.')) return;
+  const { error } = await db.from(table).update({ active: false }).eq('id', id);
+  if (error) return erro(error);
+  loadAll();
+}
+
+/* ---------- nova venda ---------- */
+let quick = false;
+try { $('sKeep').checked = localStorage.getItem('manterCliente') === '1'; } catch {}
+$('sKeep').onchange = () => { try { localStorage.setItem('manterCliente', $('sKeep').checked ? '1' : '0'); } catch {} };
+function setMode(q) {
+  quick = q;
+  $('v-sale').classList.toggle('quick', q);
+  $('modoOficina').classList.toggle('on', !q); $('modoRapida').classList.toggle('on', q);
+  $('sCardTitle').textContent = q ? 'Pagamento' : 'Cliente';
+  [...$('sPay').options].forEach(o => { o.hidden = o.disabled = (q || !isAdmin()) && o.value === 'Fiado'; });
+  if ($('sPay').selectedOptions[0]?.disabled) $('sPay').value = 'Dinheiro';
+  $('saveSalePrint').classList.toggle('ghost', q);
+}
+$('modoOficina').onclick = () => setMode(false);
+$('modoRapida').onclick = () => setMode(true);
+
+const casaItem = x => { const q = $('iQ').value.trim().toLowerCase(); return !q || (x.code || '').toLowerCase().includes(q) || x.name.toLowerCase().includes(q); };
+function fillItemSelect() {
+  const isProd = $('iType').value === 'product';
+  $('iItem').innerHTML = (isProd ? products : services).filter(casaItem).map(x => `<option value="${x.id}">${x.code ? esc(x.code) + ' - ' : ''}${esc(x.name)}</option>`).join('');
+  onItemChange();
+}
+function onItemChange() {
+  const isProd = $('iType').value === 'product';
+  const item = (isProd ? products : services).find(x => x.id == $('iItem').value);
+  $('iPrice').value = item ? (isProd ? item.sale_price : item.price) : '';
+}
+$('iType').onchange = fillItemSelect;
+$('iItem').onchange = onItemChange;
+$('iQ').addEventListener('input', () => {
+  const prod = $('iType').value === 'product', cur = prod ? products : services, outra = prod ? services : products;
+  if ($('iQ').value.trim() && !cur.some(casaItem) && outra.some(casaItem)) $('iType').value = prod ? 'service' : 'product';
+  fillItemSelect();
+});
+$('iQ').addEventListener('keydown', e => { if (e.key === 'Enter') $('addLine').click(); });
+
+$('addLine').onclick = () => {
+  const isProd = $('iType').value === 'product';
+  const item = (isProd ? products : services).find(x => x.id == $('iItem').value);
+  if (!item) return alert('Escolha um item primeiro.');
+  lines.push({
+    type: $('iType').value, id: item.id, code: item.code || null, name: item.name, qty: Math.max(1, parseInt($('iQty').value) || 1),
+    paid: null, price: +$('iPrice').value || 0
+  });
+  $('iQty').value = 1; $('iQ').value = ''; fillItemSelect(); renderLines(); $('iQ').focus();
+};
+function renderLines() {
+  $('lines').innerHTML = lines.map((l, i) => `<tr>
+    <td>${esc(l.name)} <span class="muted">(${typeLabel(l.type)})</span></td><td class="num">${l.qty}</td>
+    <td class="num">${money(l.price)}</td><td class="num">${money(l.price * l.qty)}</td>
+    <td class="num"><button class="btn ghost small" onclick="lines.splice(${i},1);renderLines()">Remover</button></td></tr>`).join('')
+    || '<tr><td colspan="5" class="muted">Nenhum item adicionado.</td></tr>';
+  $('saleTotal').textContent = money(lines.reduce((t, l) => t + l.price * l.qty, 0));
+}
+async function salvarVenda(imprimir) {
+  if (!lines.length) { $('sMsg').textContent = 'Adicione pelo menos um item.'; return; }
+  if (!quick && $('sPay').value === 'Fiado' && !$('sClient').value) { $('sMsg').textContent = 'Escolha um cliente cadastrado para vender no fiado.'; return; }
+  $('sMsg').textContent = '';
+  document.querySelectorAll('#saveSalePrint,#saveSaleQuick').forEach(b => b.disabled = true);
+  const { data, error } = await db.rpc('create_sale', {
+    p_customer: quick ? BALCAO_NOME : $('sCustomer').value.trim(), p_motorcycle: quick ? '' : $('sMoto').value.trim(), p_payment: $('sPay').value, p_items: lines,
+    p_client_id: !quick && $('sClient').value ? Number($('sClient').value) : null,
+    p_plate: quick ? null : ($('sPlate').value.trim().toUpperCase() || null), p_km: quick ? null : (parseInt($('sKm').value) || null)
+  });
+  document.querySelectorAll('#saveSalePrint,#saveSaleQuick').forEach(b => b.disabled = false);
+  if (error) { $('sMsg').textContent = error.message; return; }
+  lines = [];
+  if (!$('sKeep').checked) { ['sCustomer', 'sMoto', 'sPlate', 'sKm'].forEach(i => $(i).value = ''); limparPicker('s'); }
+  renderLines(); loadAll();
+  if (imprimir) printReceipt(data);
+  $('sMsg').textContent = `Venda nº ${data.numero} salva.`; $('sMsg').style.color = 'var(--ok)';
+  setTimeout(() => { $('sMsg').textContent = ''; $('sMsg').style.color = ''; }, 4000);
+}
+$('saveSalePrint').onclick = () => salvarVenda(true);
+$('saveSaleQuick').onclick = () => salvarVenda(false);
+
+/* ---------- nota para impressão (página inteira) ---------- */
+function printReceipt(s) {
+  const balcao = s.customer === BALCAO_NOME;
+  const itens = s.items.map(i => `<tr><td>${esc(i.name)}</td><td class="n">${i.qty}</td><td class="n">${money(i.price)}</td><td class="n">${money(i.price * i.qty)}</td></tr>`).join('');
+  const nome = `<div class="nome">${esc(NOTA_NOME)}</div>`, nomeFb = `<div class=nome>${esc(NOTA_NOME)}</div>`;
+  const logo = NOTA_LOGO
+    ? `<img class="logo" src="${esc(new URL(NOTA_LOGO, location.href).href)}" alt="" onerror="this.outerHTML='${nomeFb}'">` : nome;
+  const html = `<!DOCTYPE html><html lang="pt-BR"><head><meta charset="utf-8"><title>Nota ${esc(s.numero ?? '')}</title><style>
+    @page{size:A4;margin:12mm}
+    *{box-sizing:border-box}
+    body{margin:0;font:14px/1.45 Arial,sans-serif;color:#000}
+    .page{min-height:268mm;display:flex;flex-direction:column}
+    .top{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;padding-bottom:14px;border-bottom:3px solid #000}
+    .logo{max-height:130px;max-width:320px;display:block}
+    .nome{font:700 34px Arial,sans-serif;letter-spacing:1px}
+    .info{margin-top:6px;font-size:13px}
+    .doc{text-align:right}
+    .doc .tit{font-size:20px;font-weight:700}
+    .doc .nr{font-size:30px;font-weight:700}
+    .canc{margin-top:6px;border:2px solid #000;padding:2px 8px;font-weight:700;display:inline-block}
+    .box{margin:16px 0;border:1px solid #000;padding:12px 14px;display:grid;grid-template-columns:repeat(2,1fr);gap:10px 24px}
+    .box span{display:block;font-size:11px;text-transform:uppercase;color:#444}
+    .box div{font-size:15px;font-weight:700}
+    table{width:100%;border-collapse:collapse;margin-top:6px}
+    th{background:#e5e5e5;text-align:left;padding:8px;border:1px solid #000;font-size:13px}
+    td{padding:9px 8px;border:1px solid #999;vertical-align:top;font-size:14px}
+    .n{text-align:right;white-space:nowrap}
+    th.n{text-align:right}
+    .grow{flex:1}
+    .tot{display:flex;justify-content:space-between;align-items:center;margin-top:14px;border-top:3px solid #000;padding-top:10px}
+    .tot .t{font-size:26px;font-weight:700}
+    .ass{display:flex;gap:40px;margin-top:60px}
+    .ass div{flex:1;border-top:1px solid #000;padding-top:4px;text-align:center;font-size:12px}
+    .rod{margin-top:22px;text-align:center;font-size:12px;color:#333}
+  </style></head><body><div class="page">
+    <div class="top">
+      <div>${logo}${NOTA_INFO ? `<div class="info">${esc(NOTA_INFO)}</div>` : ''}</div>
+      <div class="doc"><div class="tit">${balcao ? 'Comprovante de venda' : 'Nota de serviço'}</div><div class="nr">Nº ${esc(s.numero ?? '')}</div>
+        <div>${fmtData(s.created_at)}</div>${s.status === 'cancelada' ? '<div class="canc">VENDA CANCELADA</div>' : ''}</div>
+    </div>
+    ${balcao ? '' : `<div class="box">
+      <div><span>Cliente</span>${esc(s.customer) || '-'}</div>
+      <div><span>Moto</span>${esc(s.motorcycle) || '-'}</div>
+      <div><span>Placa</span>${esc(s.plate) || '-'}</div>
+      <div><span>Quilometragem</span>${s.km ? Number(s.km).toLocaleString('pt-BR') + ' km' : '-'}</div>
+    </div>`}
+    <table><thead><tr><th>Descrição</th><th class="n">Qtd.</th><th class="n">Valor unit.</th><th class="n">Subtotal</th></tr></thead><tbody>${itens}</tbody></table>
+    <div class="grow"></div>
+    <div class="tot"><div>Pagamento: <b>${esc(s.payment) || '-'}${s.payment === 'Fiado' ? ' (a pagar)' : ''}</b></div><div class="t">Total: ${money(s.total)}</div></div>
+    ${balcao ? '' : '<div class="ass"><div>Assinatura do cliente</div><div>Responsável</div></div>'}
+    <div class="rod">Obrigado pela preferência! &nbsp;·&nbsp; Documento sem valor fiscal.</div>
+  </div></body></html>`;
+  const f = document.createElement('iframe');
+  f.style.cssText = 'position:fixed;width:0;height:0;border:0;right:0;bottom:0';
+  document.body.appendChild(f);
+  f.contentDocument.open(); f.contentDocument.write(html); f.contentDocument.close();
+  const imgs = [...f.contentDocument.images];
+  const prontas = Promise.all(imgs.map(im => im.complete ? 1 : new Promise(r => { im.addEventListener('load', r); im.addEventListener('error', r); })));
+  Promise.race([prontas, new Promise(r => setTimeout(r, 2500))]).then(() => setTimeout(() => {
+    f.contentWindow.focus(); f.contentWindow.print(); setTimeout(() => f.remove(), 60000);
+  }, 150));
+}
+
+/* ---------- agenda ---------- */
+const MESES_LONGOS = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
+const DOW = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+const ST = { agendado: 'Agendado', concluido: 'Concluído', cancelado: 'Cancelado' };
+let agMes = new Date(new Date().getFullYear(), new Date().getMonth(), 1), agDia = ymd(new Date()), agItens = [];
+async function loadAgenda() {
+  const y = agMes.getFullYear(), m = agMes.getMonth(), ini = new Date(y, m, 1 - new Date(y, m, 1).getDay()), fim = new Date(ini.getFullYear(), ini.getMonth(), ini.getDate() + 42);
+  const { data, error } = await db.from('appointments').select('*').gte('scheduled_at', ini.toISOString()).lt('scheduled_at', fim.toISOString()).order('scheduled_at');
+  if (error) return erro(error);
+  agItens = data; renderAgenda();
+}
+function renderAgenda() {
+  const y = agMes.getFullYear(), m = agMes.getMonth(), hoje = ymd(new Date());
+  $('agTitulo').textContent = `${MESES_LONGOS[m]} de ${y}`;
+  const ini = new Date(y, m, 1 - new Date(y, m, 1).getDay()), porDia = {};
+  agItens.forEach(a => { const k = ymd(new Date(a.scheduled_at)); (porDia[k] = porDia[k] || []).push(a); });
+  let html = DOW.map(d => `<div class="dow">${d}</div>`).join('');
+  for (let i = 0; i < 42; i++) {
+    const d = new Date(ini.getFullYear(), ini.getMonth(), ini.getDate() + i), k = ymd(d), l = porDia[k] || [];
+    html += `<div class="day ${d.getMonth() !== m ? 'out' : ''} ${k === hoje ? 'today' : ''} ${k === agDia ? 'sel' : ''}" onclick="escolherDia('${k}')"><span class="n">${d.getDate()}</span>`
+      + l.slice(0, 2).map(a => `<div class="ev ${a.status}">${hora(a.scheduled_at)} ${esc(a.customer)}</div>`).join('')
+      + (l.length > 2 ? `<div class="muted">+${l.length - 2} mais</div>` : '') + '</div>';
+  }
+  $('agCal').innerHTML = html; renderDia();
+}
+function renderDia() {
+  const [y, m, d] = agDia.split('-').map(Number);
+  $('agDiaTitulo').textContent = new Date(y, m - 1, d).toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' });
+  const l = agItens.filter(a => ymd(new Date(a.scheduled_at)) === agDia);
+  $('agLista').innerHTML = l.map(a => `<div class="ag ${a.status}">
+    <div><b>${hora(a.scheduled_at)}</b> ${esc(a.customer)} <span class="tag">${ST[a.status]}</span></div>
+    <div class="muted">${esc(a.service || 'Serviço não informado')}${a.motorcycle ? ' · ' + esc(a.motorcycle) : ''}${a.plate ? ' · ' + esc(a.plate) : ''}</div>
+    ${a.notes ? `<div class="muted">${esc(a.notes)}</div>` : ''}
+    <div class="acts">${a.status === 'agendado'
+      ? `<button class="btn small" onclick="statusAg(${a.id},'concluido')">Concluir</button><button class="btn ghost small" onclick="statusAg(${a.id},'cancelado')">Cancelar</button>`
+      : `<button class="btn ghost small" onclick="statusAg(${a.id},'agendado')">Reabrir</button>`}
+      <button class="btn ghost small admin-only" onclick="excluirAg(${a.id})">Excluir</button></div></div>`).join('')
+    || '<p class="muted" style="margin:0">Nenhum serviço neste dia.</p>';
+}
+function escolherDia(k) {
+  agDia = k; const [y, m] = k.split('-').map(Number);
+  if (agMes.getFullYear() !== y || agMes.getMonth() !== m - 1) { agMes = new Date(y, m - 1, 1); loadAgenda(); } else renderAgenda();
+}
+$('agPrev').onclick = () => { agMes = new Date(agMes.getFullYear(), agMes.getMonth() - 1, 1); loadAgenda(); };
+$('agNext').onclick = () => { agMes = new Date(agMes.getFullYear(), agMes.getMonth() + 1, 1); loadAgenda(); };
+$('agHoje').onclick = () => escolherDia(ymd(new Date()));
+async function statusAg(id, status) {
+  const { error } = await db.from('appointments').update({ status }).eq('id', id);
+  if (error) return erro(error);
+  loadAgenda(); loadAll();
+}
+async function excluirAg(id) {
+  if (!confirm('Excluir este agendamento?')) return;
+  const { error } = await db.from('appointments').delete().eq('id', id);
+  if (error) return erro(error);
+  loadAgenda(); loadAll();
+}
+$('addAg').onclick = async () => {
+  const nome = $('aName').value.trim();
+  if (!nome) return alert('Escolha um cliente ou digite o nome.');
+  if (!$('aTime').value) return alert('Escolha a hora.');
+  const { error } = await db.from('appointments').insert({
+    scheduled_at: new Date(`${agDia}T${$('aTime').value}`).toISOString(), client_id: $('aClient').value ? Number($('aClient').value) : null,
+    customer: nome, motorcycle: $('aMoto').value.trim() || null, plate: $('aPlate').value.trim().toUpperCase() || null,
+    service: $('aServ').value.trim() || null, notes: $('aNote').value.trim() || null, created_by: me.email
+  });
+  if (error) return erro(error);
+  ['aName', 'aMoto', 'aPlate', 'aServ', 'aNote'].forEach(i => $(i).value = ''); limparPicker('a');
+  loadAgenda(); loadAll();
+};
+
+/* ---------- registro de vendas ---------- */
+async function loadHistory() {
+  const { data, error } = await db.from('sales').select('*').order('created_at', { ascending: false }).limit(1000);
+  if (error) return erro(error);
+  salesCache = data; renderHistory();
+}
+['hQ', 'hFrom', 'hTo', 'hSt', 'hType'].forEach(id => $(id).addEventListener('input', renderHistory));
+function renderHistory() {
+  const q = $('hQ').value.toLowerCase(), a = $('hFrom').value, b = $('hTo').value, st = $('hSt').value, ty = $('hType').value;
+  const rows = ordenar('h', salesCache.filter(s => {
+    const d = new Date(s.created_at).toLocaleDateString('sv-SE');
+    const txt = [s.numero, s.customer, s.motorcycle, s.plate, s.items.map(i => i.name).join(' ')].join(' ').toLowerCase();
+    return (!q || txt.includes(q)) && (!a || d >= a) && (!b || d <= b) && (!st || s.status === st) && (!ty || (ty === 'balcao') === (s.customer === BALCAO_NOME));
+  }));
+  const ativas = rows.filter(s => s.status === 'ativa');
+  const total = ativas.reduce((t, s) => t + Number(s.total), 0);
+  const lucro = ativas.reduce((t, s) => t + s.items.reduce((u, i) => u + (i.price - (i.paid || 0)) * i.qty, 0), 0);
+  $('hSummary').textContent = `${ativas.length} vendas ativas, ${money(total)} faturado, lucro estimado ${money(lucro)}.`;
+  $('hBody').innerHTML = rows.map(s => `<tr class="${s.status === 'cancelada' ? 'canceled' : ''}">
+    <td>${s.numero}</td><td>${fmtData(s.created_at)}</td><td>${esc(s.customer)}</td>
+    <td>${esc(s.motorcycle)}${s.plate ? ' · ' + esc(s.plate) : ''}${s.km ? ' · ' + s.km + ' km' : ''}</td>
+    <td>${esc(s.payment)}${s.payment === 'Fiado' && s.total - s.paid > 0.004 ? ` (falta ${money(s.total - s.paid)})` : ''}</td>
+    <td>${s.items.map(i => `${esc(i.name)} x${i.qty}`).join(', ')}</td>
+    <td class="num">${money(s.total)}</td>
+    <td class="num"><button class="btn ghost small" onclick="printReceipt(salesCache.find(x => x.id === ${s.id}))">Imprimir</button>
+      ${s.status === 'ativa' ? `<button class="btn ghost small" onclick="cancelar(${s.id})">Cancelar</button>` : ''}</td></tr>`).join('')
+    || '<tr><td colspan="8" class="muted">Nenhuma venda encontrada.</td></tr>';
+}
+RENDER.h = renderHistory;
+async function cancelar(id) {
+  if (!confirm('Cancelar esta venda? Os produtos voltam para o estoque.')) return;
+  const { error } = await db.rpc('cancel_sale', { p_id: id });
+  if (error) return erro(error);
+  await loadAll(); if (!$('v-history').classList.contains('hidden')) loadHistory();
+}
+
+/* ---------- clientes ---------- */
+function renderClients() {
+  const q = $('cQ').value.toLowerCase(), adm = isAdmin();
+  const deveDe = c => debts.filter(d => d.client_id === c.id).reduce((t, d) => t + faltaDe(d), 0);
+  $('cBody').innerHTML = ordenar('c', clients.filter(c => casaCliente(c, q)), { deve: deveDe }).map(c => {
+    const deve = deveDe(c);
+    return `<tr><td>${esc(c.name)}</td><td>${esc(c.phone)}</td><td>${esc(c.motorcycle)}</td><td>${esc(c.plate)}</td>
+      <td class="num admin-only">${deve > 0.004 ? `<b>${money(deve)}</b>` : '-'}</td>
+      <td class="num admin-only"><button class="btn ghost small" onclick="editar('clients',${c.id})">Editar</button> <button class="btn ghost small" onclick="arquivar('clients',${c.id})">Arquivar</button></td></tr>`;
+  }).join('') || `<tr><td colspan="${adm ? 6 : 4}" class="muted">Nenhum cliente encontrado.</td></tr>`;
+}
+RENDER.c = renderClients;
+$('cQ').addEventListener('input', renderClients);
+$('addClient').onclick = async () => {
+  const name = $('cName').value.trim();
+  if (!name) return alert('Digite o nome do cliente.');
+  const { error } = await db.from('clients').insert({
+    name, phone: $('cPhone').value.trim(), motorcycle: $('cMoto').value.trim(), plate: $('cPlate').value.trim().toUpperCase() || null,
+    address: $('cAddr').value.trim() || null, gender: $('cGender').value || null, age_range: $('cAge').value || null
+  });
+  if (error) return erro(error);
+  ['cName', 'cPhone', 'cMoto', 'cPlate', 'cAddr', 'cGender', 'cAge'].forEach(i => $(i).value = ''); $('cOpt').open = false; loadAll();
+};
+
+/* ---------- devedores ---------- */
+const nomeDe = d => (clientsAll.find(x => x.id === d.client_id) || {}).name || d.customer;
+const foneDe = d => (clientsAll.find(x => x.id === d.client_id) || {}).phone || '';
+function renderDebtors() {
+  const falta = debts.reduce((t, d) => t + faltaDe(d), 0);
+  const pessoas = new Set(debts.map(d => d.client_id ?? d.customer)).size;
+  $('dSummary').textContent = debts.length ? `${money(falta)} a receber de ${pessoas} cliente(s).` : 'Ninguém devendo.';
+  $('dBody').innerHTML = ordenar('d', debts, { nome: nomeDe, fone: foneDe, falta: faltaDe }).map(d => `<tr>
+    <td>${esc(nomeDe(d))}</td><td>${esc(foneDe(d))}</td><td>${d.numero}</td><td>${fmtData(d.created_at)}</td>
+    <td class="num">${money(d.total)}</td><td class="num">${money(d.paid)}</td><td class="num"><b>${money(faltaDe(d))}</b></td>
+    <td class="num"><button class="btn small" onclick="receber(${d.id}, ${faltaDe(d)})">Receber</button>
+      <button class="btn ghost small" onclick="editarDivida(${d.id})">Editar</button>
+      <button class="btn ghost small" onclick="cancelar(${d.id})">Cancelar</button></td></tr>`).join('')
+    || '<tr><td colspan="8" class="muted">Nenhum valor a receber.</td></tr>';
+}
+RENDER.d = renderDebtors;
+async function receber(id, falta) {
+  const v = prompt('Valor recebido (R$):', falta.toFixed(2).replace('.', ','));
+  if (v === null) return;
+  const valor = parseFloat(String(v).replace(',', '.'));
+  if (!(valor > 0)) return alert('Valor inválido.');
+  const { error } = await db.rpc('receive_payment', { p_sale: id, p_amount: valor, p_method: $('dMethod').value });
+  if (error) return erro(error);
+  loadAll();
+}
+$('addDebt').onclick = async () => {
+  const valor = parseFloat($('dAmount').value);
+  if (!$('dClient').value) return alert('Escolha ou cadastre o cliente.');
+  if (!(valor > 0)) return alert('Digite o valor da dívida.');
+  const { error } = await db.rpc('add_debt', { p_client_id: Number($('dClient').value), p_description: $('dDesc').value.trim(), p_amount: valor, p_date: $('dDate').value || null });
+  if (error) return erro(error);
+  ['dDesc', 'dAmount', 'dDate'].forEach(i => $(i).value = ''); limparPicker('d'); loadAll();
+};
+
+/* ---------- editar cadastros ---------- */
+function abrirDlg(titulo, campos, item, salvar) {
+  $('dlgTitle').textContent = titulo;
+  $('dlgFields').innerHTML = campos.map(([k, rot, tipo]) => Array.isArray(tipo)
+    ? `<label>${rot}<select data-k="${k}">${tipo.map(o => `<option value="${esc(o)}" ${item[k] === o ? 'selected' : ''}>${o || 'Não informar'}</option>`).join('')}</select></label>`
+    : `<label>${rot}<input data-k="${k}" type="${tipo === 'text' ? 'text' : 'number'}" ${tipo === 'text' ? '' : `min="0" step="${tipo === 'int' ? 1 : 0.01}"`} value="${esc(item[k] ?? '')}"></label>`).join('');
+  $('dlgSave').onclick = async () => {
+    const v = {};
+    $('dlgFields').querySelectorAll('input,select').forEach(i => {
+      const t = campos.find(c => c[0] === i.dataset.k)[2];
+      v[i.dataset.k] = Array.isArray(t) ? (i.value || null) : t === 'text' ? (i.value.trim() || null) : t === 'int' ? Math.round(Number(i.value)) : Number(i.value);
+    });
+    if (await salvar(v) !== false) { $('dlg').close(); loadAll(); }
+  };
+  $('dlg').showModal();
+}
+const GENEROS = ['', 'Homem', 'Mulher', 'Outro'];
+const FAIXAS = ['', 'Menos de 20', '20 a 29', '30 a 39', '40 a 49', '50 a 59', '60 a 69', '70 ou mais'];
+const EDITAVEL = {
+  products: ['Editar produto', () => products, [['code', 'Código', 'text'], ['name', 'Nome', 'text'], ['category', 'Categoria', 'text'], ['cost_price', 'Custo médio', 'num'], ['sale_price', 'Preço de venda', 'num'], ['stock', 'Estoque', 'int'], ['min_stock', 'Estoque mínimo (aviso)', 'int']]],
+  services: ['Editar serviço', () => services, [['code', 'Código', 'text'], ['name', 'Nome do serviço', 'text'], ['category', 'Categoria', 'text'], ['price', 'Preço', 'num']]],
+  clients:  ['Editar cliente', () => clients, [['name', 'Nome', 'text'], ['phone', 'Telefone', 'text'], ['motorcycle', 'Moto (modelo)', 'text'], ['plate', 'Placa (opcional)', 'text'], ['address', 'Endereço', 'text'], ['gender', 'Sexo', GENEROS], ['age_range', 'Faixa etária', FAIXAS]]]
+};
+function editar(tabela, id) {
+  const [titulo, lista, campos] = EDITAVEL[tabela];
+  abrirDlg(titulo, campos, lista().find(x => x.id === id), async v => {
+    if (!v.name) { alert('O nome não pode ficar vazio.'); return false; }
+    const { error } = await db.from(tabela).update(v).eq('id', id);
+    if (error) { erro(error); return false; }
+  });
+}
+function editarDivida(id) {
+  const d = debts.find(x => x.id === id);
+  if (!(d.items.length === 1 && d.items[0].id === 0)) return alert('Esta dívida vem de uma venda com itens. Para mudar o valor, cancele a venda e refaça.');
+  abrirDlg('Editar dívida', [['description', 'Descrição', 'text'], ['total', 'Valor total (R$)', 'num']], { description: d.items[0].name, total: d.total }, async v => {
+    const { error } = await db.rpc('edit_debt', { p_sale: id, p_total: v.total, p_description: v.description });
+    if (error) { erro(error); return false; }
+  });
+}
+
+/* ---------- análises ---------- */
+const MESES = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+const GRAFICOS = {
+  tempo: 'Faturamento no período', top: 'Mais vendidos (quantidade)', categoria: 'Faturamento por categoria', lucro: 'Lucro por categoria',
+  pagamento: 'Formas de pagamento', tipo: 'Oficina x balcão', faixa: 'Clientes por faixa etária', sexo: 'Clientes por sexo'
+};
+const PAL = ['#d9480f', '#1b2430', '#2b8a3e', '#1c7ed6', '#f08c00', '#7048e8', '#c2255c', '#0c8599', '#66717f', '#a9e34b'];
+let vendasAn = [], prodAn = [], servAn = [], charts = {}, graficosOn = ['tempo', 'top', 'categoria', 'pagamento'];
+try { graficosOn = JSON.parse(localStorage.getItem('graficos')) || graficosOn; } catch {}
+const catDe = i => (i.type === 'product' ? prodAn : servAn).find(x => x.id === i.id)?.category || (i.type === 'product' ? 'Sem categoria' : 'Serviços');
+function preencher(id, ops, atual) {
+  const el = $(id);
+  el.innerHTML = ops.map(([v, t]) => `<option value="${esc(v)}">${esc(t)}</option>`).join('');
+  el.value = atual ?? ''; if (el.selectedIndex < 0) el.selectedIndex = 0;
+}
+async function loadAnalise() {
+  try { vendasAn = await todas('sales'); prodAn = await todas('products'); servAn = await todas('services'); } catch (e) { return erro(e); }
+  const anos = [...new Set(vendasAn.map(s => new Date(s.created_at).getFullYear()))].sort((a, b) => b - a);
+  preencher('anAno', [['', 'Todos'], ...anos.map(a => [String(a), String(a)])], $('anAno').options.length ? $('anAno').value : String(new Date().getFullYear()));
+  preencher('anMes', [['', 'Todos'], ...MESES.map((m, i) => [String(i + 1), m])], $('anMes').value);
+  const cats = [...new Set([...prodAn.map(p => p.category || 'Sem categoria'), ...servAn.map(x => x.category || 'Serviços')])].sort();
+  preencher('anCat', [['', 'Todas'], ...cats.map(c => [c, c])], $('anCat').value);
+  const nomes = [...new Set([...prodAn, ...servAn].map(x => x.name))].sort();
+  preencher('anItem', [['', 'Todos'], ...nomes.map(n => [n, n])], $('anItem').value);
+  $('anChips').innerHTML = '<span class="muted">Gráficos:</span>' + Object.entries(GRAFICOS).map(([k, t]) =>
+    `<label class="chip"><input type="checkbox" data-g="${k}" ${graficosOn.includes(k) ? 'checked' : ''}> ${t}</label>`).join('');
+  renderAnalise();
+  if (!$('anEstoque').classList.contains('hidden')) renderEstoque();
+}
+$('anChips').addEventListener('change', () => {
+  graficosOn = [...$('anChips').querySelectorAll('input:checked')].map(i => i.dataset.g);
+  try { localStorage.setItem('graficos', JSON.stringify(graficosOn)); } catch {}
+  renderAnalise();
+});
+['anAno', 'anMes', 'anCat', 'anItem', 'anTipo'].forEach(id => $(id).addEventListener('change', renderAnalise));
+
+function renderAnalise() {
+  const f = { ano: $('anAno').value, mes: $('anMes').value, cat: $('anCat').value, item: $('anItem').value, tipo: $('anTipo').value };
+  const vendas = vendasAn.filter(s => {
+    if (s.status !== 'ativa') return false;
+    const d = new Date(s.created_at);
+    return (!f.ano || d.getFullYear() == f.ano) && (!f.mes || d.getMonth() + 1 == f.mes) && (!f.tipo || (f.tipo === 'balcao') === (s.customer === BALCAO_NOME));
+  });
+  const L = [];
+  vendas.forEach(s => s.items.forEach(i => {
+    const cat = catDe(i);
+    if ((!f.cat || cat === f.cat) && (!f.item || i.name === f.item))
+      L.push({ s, i, cat, rec: i.price * i.qty, luc: (i.price - (i.paid || 0)) * i.qty, d: new Date(s.created_at) });
+  }));
+  const fat = L.reduce((t, l) => t + l.rec, 0), luc = L.reduce((t, l) => t + l.luc, 0), n = new Set(L.map(l => l.s.id)).size;
+  $('anKpis').innerHTML = [['Faturamento', money(fat)], ['Lucro estimado', money(luc)], ['Vendas', n], ['Ticket médio', money(n ? fat / n : 0)]]
+    .map(([t, v]) => `<div class="kpi"><span>${t}</span><b>${v}</b></div>`).join('');
+  Object.values(charts).forEach(c => c.destroy()); charts = {};
+  $('anCharts').innerHTML = graficosOn.filter(g => GRAFICOS[g]).map(g =>
+    `<div class="card" style="margin:0"><h2>${GRAFICOS[g]}</h2><div style="position:relative;height:280px"><canvas id="ch_${g}"></canvas></div></div>`).join('')
+    || '<p class="muted">Marque ao menos um gráfico acima.</p>';
+  const soma = (arr, chave, val) => { const m = {}; arr.forEach(x => { const k = chave(x); m[k] = (m[k] || 0) + val(x); }); return m; };
+  const top = (m, max = 10) => Object.entries(m).sort((a, b) => b[1] - a[1]).slice(0, max);
+  const desenhar = (g, tipo, pares, rotulo, horiz) => {
+    if (!$('ch_' + g)) return;
+    const pizza = tipo === 'doughnut';
+    charts[g] = new Chart($('ch_' + g), {
+      type: tipo,
+      data: { labels: pares.map(p => p[0]), datasets: [{ label: rotulo, data: pares.map(p => Math.round(p[1] * 100) / 100), backgroundColor: pizza ? PAL : '#d9480f' }] },
+      options: { responsive: true, maintainAspectRatio: false, indexAxis: horiz ? 'y' : 'x',
+        plugins: { legend: { display: pizza, position: 'bottom' } }, scales: pizza ? {} : { [horiz ? 'x' : 'y']: { beginAtZero: true } } }
+    });
+  };
+  if (f.mes) {
+    const dias = new Date(f.ano || new Date().getFullYear(), f.mes, 0).getDate(), m = soma(L, l => l.d.getDate(), l => l.rec);
+    desenhar('tempo', 'bar', Array.from({ length: dias }, (_, k) => [String(k + 1), m[k + 1] || 0]), 'R$');
+  } else if (f.ano) {
+    const m = soma(L, l => l.d.getMonth(), l => l.rec);
+    desenhar('tempo', 'bar', MESES.map((nome, k) => [nome, m[k] || 0]), 'R$');
+  } else {
+    const m = soma(L, l => `${l.d.getFullYear()}-${String(l.d.getMonth() + 1).padStart(2, '0')}`, l => l.rec);
+    desenhar('tempo', 'bar', Object.entries(m).sort(), 'R$');
+  }
+  desenhar('top', 'bar', top(soma(L, l => l.i.name, l => l.i.qty)), 'Quantidade', true);
+  desenhar('categoria', 'doughnut', top(soma(L, l => l.cat, l => l.rec), 8), 'R$');
+  desenhar('lucro', 'bar', top(soma(L, l => l.cat, l => l.luc), 8), 'R$');
+  desenhar('pagamento', 'doughnut', Object.entries(soma(L, l => l.s.payment || 'Sem forma', l => l.rec)), 'R$');
+  desenhar('tipo', 'doughnut', Object.entries(soma(L, l => l.s.customer === BALCAO_NOME ? 'Balcão' : 'Oficina', l => l.rec)), 'R$');
+  const cs = [...new Set(L.map(l => l.s.client_id).filter(Boolean))].map(id => clientsAll.find(c => c.id === id)).filter(Boolean);
+  const contar = chave => { const m = {}; cs.forEach(c => { const k = chave(c) || 'Não informado'; m[k] = (m[k] || 0) + 1; }); return m; };
+  const mf = contar(c => c.age_range);
+  desenhar('faixa', 'bar', [...FAIXAS.slice(1), 'Não informado'].map(k => [k, mf[k] || 0]), 'Clientes');
+  desenhar('sexo', 'doughnut', Object.entries(contar(c => c.gender)), 'Clientes');
+}
+
+/* ---------- estoque e projeções ---------- */
+const pct = n => n.toFixed(1).replace('.', ',') + '%';
+let estLinhas = [], chEst = null;
+function setModoAn(est) {
+  $('anVendas').classList.toggle('hidden', est); $('anEstoque').classList.toggle('hidden', !est);
+  $('anModoV').classList.toggle('on', !est); $('anModoE').classList.toggle('on', est);
+  if (est) renderEstoque();
+}
+$('anModoV').onclick = () => setModoAn(false);
+$('anModoE').onclick = () => setModoAn(true);
+$('esPer').addEventListener('change', renderEstoque);
+
+function renderEstoque() {
+  const DIA = 864e5, agora = Date.now(), ativas = vendasAn.filter(s => s.status === 'ativa');
+  let dias = parseInt($('esPer').value);
+  if (!dias) { const ini = Math.min(...ativas.map(s => +new Date(s.created_at))); dias = Number.isFinite(ini) ? Math.max(1, Math.ceil((agora - ini) / DIA)) : 1; }
+  const corte = agora - dias * DIA, vend = {};
+  ativas.filter(s => +new Date(s.created_at) >= corte).forEach(s => s.items.forEach(i => {
+    if (i.type !== 'product') return;
+    const p = prodAn.find(x => x.id === i.id), v = vend[i.id] = vend[i.id] || { q: 0, rec: 0, luc: 0 };
+    v.q += i.qty; v.rec += i.price * i.qty; v.luc += (i.price - (i.paid ?? (p ? p.cost_price : 0))) * i.qty;
+  }));
+  const L = prodAn.filter(p => p.active || vend[p.id]).map(p => {
+    const v = vend[p.id] || { q: 0, rec: 0, luc: 0 }, stock = p.active ? p.stock : 0, cob = v.q > 0 ? stock / (v.q / dias) : null, pq = Math.min(v.q, stock);
+    return { code: p.code, name: p.name, stock, cost: p.cost_price, price: p.sale_price, margem: p.sale_price > 0 ? (p.sale_price - p.cost_price) / p.sale_price * 100 : 0,
+      q: v.q, rec: v.rec, luc: v.luc, cob, pq, prec: pq * p.sale_price, pluc: pq * (p.sale_price - p.cost_price), pot: stock * p.sale_price, custo: stock * p.cost_price,
+      sit: v.q === 0 ? (stock > 0 ? 'Parado' : '-') : (cob < dias ? 'Repor' : 'Ok'), abc: '-' };
+  });
+  const sum = (arr, f) => arr.reduce((t, x) => t + f(x), 0), totRec = sum(L, l => l.rec);
+  let acum = 0;
+  [...L].filter(l => l.rec > 0).sort((a, b) => b.rec - a.rec).forEach(l => { l.abc = acum < 0.8 * totRec ? 'A' : acum < 0.95 * totRec ? 'B' : 'C'; acum += l.rec; });
+  estLinhas = L;
+
+  const un = sum(L, l => l.stock), custo = sum(L, l => l.custo), pot = sum(L, l => l.pot), lucPot = pot - custo;
+  const recPer = totRec, lucPer = sum(L, l => l.luc), pRec = sum(L, l => l.prec), pLuc = sum(L, l => l.pluc);
+  const sobra = sum(L, l => (l.stock - l.pq) * l.cost), parado = sum(L.filter(l => l.sit === 'Parado'), l => l.custo), repor = L.filter(l => l.sit === 'Repor').length;
+  const diasTudo = recPer > 0 ? pot / (recPer / dias) : null;
+  $('esKpis').innerHTML = [['Unidades em estoque', un.toLocaleString('pt-BR')], ['Estoque a preço de compra', money(custo)], ['Estoque a preço de venda', money(pot)],
+    ['Lucro se vender tudo', `${money(lucPot)} (${pct(pot > 0 ? lucPot / pot * 100 : 0)})`], ['Produtos para repor', repor], ['Parado (sem vendas no período)', money(parado)]]
+    .map(([t, v]) => `<div class="kpi"><span>${t}</span><b style="font-size:24px">${v}</b></div>`).join('');
+  $('esCenarios').innerHTML = `<h2>Cenários</h2>
+    <p style="margin-top:0"><b>1. Vender todo o estoque pelo preço anunciado</b><br>Faturamento ${money(pot)} · Custo ${money(custo)} · <b>Lucro ${money(lucPot)}</b></p>
+    <p><b>2. Repetir as vendas dos últimos ${dias} dias nos próximos ${dias} dias</b><br>Faturamento projetado ${money(pRec)} · <b>Lucro projetado ${money(pLuc)}</b><br>
+      <span class="muted">Período anterior (real): ${money(recPer)} de faturamento e ${money(lucPer)} de lucro. Sobrariam em estoque ${money(sobra)} ao preço de compra.</span></p>
+    <p style="margin-bottom:0"><b>Ritmo:</b> ${diasTudo === null ? 'sem vendas no período para calcular.' : `no ritmo atual, vender todo o estoque levaria cerca de ${Math.round(diasTudo)} dias (${(diasTudo / 30).toFixed(1).replace('.', ',')} meses).`}</p>`;
+  if (chEst) chEst.destroy();
+  const r2 = n => Math.round(n * 100) / 100;
+  chEst = new Chart($('ch_est'), { type: 'bar',
+    data: { labels: ['Período anterior (real)', 'Próximo período (projeção)', 'Vender todo o estoque'],
+      datasets: [{ label: 'Faturamento', data: [r2(recPer), r2(pRec), r2(pot)], backgroundColor: '#d9480f' }, { label: 'Lucro', data: [r2(lucPer), r2(pLuc), r2(lucPot)], backgroundColor: '#2b8a3e' }] },
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } }, scales: { y: { beginAtZero: true } } } });
+
+  const com = L.filter(l => l.rec > 0);
+  const card = (t, arr, fmt) => `<div class="card" style="margin:0"><h2>${t}</h2>${arr.length
+    ? `<ol style="margin:0;padding-left:22px">${arr.slice(0, 10).map(l => `<li>${esc(l.name)} <span class="muted">${fmt(l)}</span></li>`).join('')}</ol>`
+    : '<p class="muted" style="margin:0">Sem dados no período.</p>'}</div>`;
+  const fFat = l => `${money(l.rec)} · ${l.q} un.`, fLuc = l => `${money(l.luc)} · ${l.q} un.`;
+  $('esListas').innerHTML = card('Mais geram faturamento', [...com].sort((a, b) => b.rec - a.rec), fFat)
+    + card('Menos geram faturamento', [...com].sort((a, b) => a.rec - b.rec), fFat)
+    + card('Mais geram lucro', [...com].sort((a, b) => b.luc - a.luc), fLuc)
+    + card('Menos geram lucro', [...com].sort((a, b) => a.luc - b.luc), fLuc)
+    + card('Estoque parado (sem vendas no período)', L.filter(l => l.sit === 'Parado').sort((a, b) => b.custo - a.custo), l => `${money(l.custo)} parados · ${l.stock} un.`);
+  renderEstTabela();
+}
+function renderEstTabela() {
+  $('esBody').innerHTML = ordenar('est', estLinhas, { cob: l => l.cob ?? 1e12 }).map(l => `<tr class="${l.sit === 'Repor' ? 'low' : ''}">
+    <td>${esc(l.code)}</td><td>${esc(l.name)}</td><td class="num">${l.stock}</td><td class="num">${money(l.cost)}</td><td class="num">${money(l.price)}</td>
+    <td class="num">${pct(l.margem)}</td><td class="num">${l.q}</td><td class="num">${money(l.rec)}</td><td class="num">${money(l.luc)}</td>
+    <td class="num">${l.cob === null ? '—' : Math.round(l.cob) + ' d'}</td><td>${l.abc}</td><td>${l.sit}</td></tr>`).join('')
+    || '<tr><td colspan="12" class="muted">Nenhum produto.</td></tr>';
+}
+RENDER.est = renderEstTabela;
+
+/* ---------- usuários ---------- */
+async function loadUsers() {
+  const { data, error } = await db.from('profiles').select('*').order('created_at');
+  if (error) return erro(error);
+  usersCache = data; renderUsers();
+}
+function renderUsers() {
+  $('uBody').innerHTML = ordenar('u', usersCache).map(u => `<tr><td>${esc(u.email)}</td><td>${u.role === 'admin' ? 'Administrador' : 'Funcionário'}</td><td>${fmtData(u.created_at)}</td></tr>`).join('');
+}
+RENDER.u = renderUsers;
+$('addUser').onclick = async () => {
+  $('uMsg').textContent = ''; $('uMsg').style.color = '';
+  const { error } = await db.functions.invoke('create-user', {
+    body: { email: $('uEmail').value.trim(), password: $('uPass').value, role: $('uAdmin').checked ? 'admin' : 'funcionario' }
+  });
+  if (error) {
+    let m = error.message; try { m = (await error.context.json()).error || m; } catch {}
+    $('uMsg').textContent = m; return;
+  }
+  $('uEmail').value = ''; $('uPass').value = ''; $('uAdmin').checked = false;
+  $('uMsg').textContent = 'Usuário criado.'; $('uMsg').style.color = 'var(--ok)';
+  loadUsers();
+};
+
+/* ---------- histórico de alterações ---------- */
+async function loadAudit() {
+  const { data, error } = await db.from('audit_log').select('*').order('created_at', { ascending: false }).limit(200);
+  if (error) return erro(error);
+  auditCache = data; renderAudit();
+}
+function renderAudit() {
+  $('aBody').innerHTML = ordenar('a', auditCache).map(a => `<tr><td>${fmtData(a.created_at)}</td><td>${esc(a.user_email)}</td><td>${esc(a.action)}</td>
+    <td>${esc(a.table_name)}</td><td class="muted" style="font-size:12px;word-break:break-all">${esc(JSON.stringify(a.details)).slice(0, 160)}</td></tr>`).join('')
+    || '<tr><td colspan="5" class="muted">Nada registrado ainda.</td></tr>';
+}
+RENDER.a = renderAudit;
+
+/* ---------- baixar a base de dados inteira ---------- */
+async function todas(t) {
+  let out = [], from = 0;
+  for (;;) {
+    const { data, error } = await db.from(t).select('*').range(from, from + 999);
+    if (error) throw error;
+    out = out.concat(data);
+    if (data.length < 1000) return out;
+    from += 1000;
+  }
+}
+function baixar(blob, nome) {
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = nome; a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+}
+async function baixarBase() {
+  try {
+    const tabelas = ['products', 'services', 'sales', 'purchases', 'clients', 'payments', 'appointments', 'audit_log', 'profiles'], dados = {};
+    for (const t of tabelas) dados[t] = await todas(t);
+    const dia = new Date().toISOString().slice(0, 10);
+    baixar(new Blob([JSON.stringify(dados, null, 2)], { type: 'application/json' }), `backup-zecamotos-${dia}.json`);
+    const wb = XLSX.utils.book_new();
+    for (const t of tabelas) {
+      const linhas = dados[t].map(r => ({ ...r, ...(r.items ? { items: JSON.stringify(r.items) } : {}), ...(r.details ? { details: JSON.stringify(r.details) } : {}) }));
+      XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(linhas), t);
+    }
+    XLSX.writeFile(wb, `backup-zecamotos-${dia}.xlsx`);
+  } catch (e) { erro(e); }
+}
+
+renderLines();
+marcarSetas();
+start();
+</script>
+</body>
+</html>
